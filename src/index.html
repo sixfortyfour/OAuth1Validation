@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>OAuth1 Validation</title>
+        <title>OAuth1 Signature Generator</title>
         <meta
             name="description"
             content="A basic responsive web page for OAuth1 Validation"
@@ -10,6 +10,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="css/styles.css" />
         <script type="text/javascript" src="script/sha1.js"></script>
         <script type="text/javascript" src="script/oauth.js"></script>
         <script type="text/javascript">
@@ -57,35 +58,121 @@
         </script>
     </head>
     <body onload="freshNonce();freshTimestamp()">
-        <h1>OAuth1 Validation</h1>
-        <div>
-            To compute an <a href="https://oauth.net/">OAuth</a> <a href="https://oauth.net/core/1.0/#signing_process">request signature</a>,
-            fill in this form and click the 'Sign' button.</div>
+        <div class="Header">
+            <h4>OAuth1 Signature Generator
+                <p>
+                    <small class="text-muted">To compute an <a href="https://oauth.net/">OAuth</a> <a href="https://oauth.net/core/1.0/#signing_process">request signature</a>, fill in this form and click the 'Sign' button.</small>
+                </p>
+            </h4>
+        </div>
         <form name="request">
-          <table border="0">
-            <tr><th align="right">HTTP method:      </th><td><input name="httpMethod" type="text" size="5" value="GET"/></td></tr>
-            <tr><th align="right">URL:              </th><td><input name="URL" type="text" size="80" value="http://host.net/resource"></td></tr>
-            <tr><th align="right">parameters:       </th><td><input name="parameters" type="text" size="80" value="name=value&amp;name=value"/></td></tr>
-            <tr><th align="right">version:          </th><td><input name="oauth_version" type="text" size="4" value="1.0"/></td></tr>
-            <tr><th align="right">consumer key:     </th><td><input name="oauth_consumer_key" type="text" size="64" value="abcd"/></td></tr>
-            <tr><th align="right">consumer secret:  </th><td><input name="consumerSecret" type="text" size="64" value="efgh"/></td></tr>
-            <tr><th align="right">token:            </th><td><input name="oauth_token" type="text" size="64" value="ijkl"/></td></tr>
-            <tr><th align="right">token secret:     </th><td><input name="tokenSecret" type="text" size="64" value="mnop"/></td></tr>
-            <tr><th align="right">timestamp:        </th><td><input name="oauth_timestamp" type="text" size="12"/>
-                                                             <input type="button" value="now" onclick="freshTimestamp()"/></td></tr>
-            <tr><th align="right">nonce:            </th><td><input name="oauth_nonce" type="text" size="12"/>
-                                                             <input type="button" value="random" onclick="freshNonce()"/></td></tr>
-            <tr><th align="right">signature method: </th><td><input name="oauth_signature_method" type="text" size="12" value="HMAC-SHA1"/></td></tr>
-          </table>
-          <input type="button" value="Sign" onclick="sign(document.request)"/>
-          <input type="reset" value="Reset"/>
-          <br/>
-          <table border="2">
-            <tr valign="baseline"><th align="right">normalized parameters:</th><td><pre id="normalizedParameters">&nbsp;</pre></td></tr>
-            <tr valign="baseline"><th align="right">signature base string:</th><td><pre id="signatureBaseString"> &nbsp;</pre></td></tr>
-            <tr valign="baseline"><th align="right">signature:            </th><td><pre id="signature">           &nbsp;</pre></td></tr>
-            <tr valign="baseline"><th align="right">Authorization header: </th><td><pre id="authorizationHeader"> &nbsp;</pre></td></tr>
-          </table>
+            <div class="mb-3">
+                <label for="httpMethod" class="form-label">
+                    HTTP method
+                </label>
+                <input id="httpMethod" class="form-control" name="httpMethod" size="5" type="text" value="GET"/>
+            </div>
+            <div class="mb-3">
+                <label for="URL" class="form-label">
+                    URL
+                </label>
+                <input id="URL" class="form-control" name="URL" type="text" size="80" value="http://host.net/resource" />
+            </div>
+            <div class="mb-3">
+                <label for="parameters" class="form-label">
+                    Parameters
+                </label>
+                <input class="form-control" name="parameters" type="text" size="80" value="name=value&amp;name=value"/>
+            </div>
+            <div class="mb-3">
+                <label for="oauth_version" class="form-label">
+                    Version
+                </label>
+                <input class="form-control" name="oauth_version" type="text" size="4" value="1.0"/>
+            </div>
+            <div class="mb-3">
+                <label for="oauth_consumer_key" class="form-label">
+                    Consumer key
+                </label>
+                <input class="form-control" name="oauth_consumer_key" type="text" size="64" value="abcd"/>
+            </div>
+            <div class="mb-3">
+                <label for="consumerSecret" class="form-label">
+                    Consumer secret
+                </label>
+                <input class="form-control" name="consumerSecret" type="text" size="64" value="efgh"/>
+            </div>
+            <div class="mb-3">
+                <label for="httpMethod" class="form-label">
+                    Token
+                </label>
+                <input id="httpMethod" class="form-control" name="httpMethod" size="5" type="text" value="GET"/>
+            </div>
+            <div class="mb-3">
+                <label for="tokenSecret" class="form-label">
+                    Token secret
+                </label>
+                <input class="form-control" name="tokenSecret" type="text" size="64" value="mnop"/>
+            </div>
+            <div class="mb-3">
+                <label for="oauth_timestamp" class="form-label">
+                    Timestamp
+                </label>
+                <div class="input-group mb-3">
+                    <input class="form-control" name="oauth_timestamp" type="text" size="12"/>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" onclick="freshTimestamp()">now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="httpMethod" class="form-label">
+                    Nonce
+                </label>
+                <div class="input-group mb-3">
+                    <input class="form-control" name="oauth_nonce" type="text" size="12"/>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" onclick="freshNonce()">random</button>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="URL" class="form-label">
+                    Signature method
+                </label>
+                <input class="form-control" name="oauth_signature_method" type="text" size="12" value="HMAC-SHA1"/>
+            </div>
+            <div class="mb-3">
+                <input type="button" class="btn btn-primary" value="Sign" data-bs-toggle="modal" data-bs-target="#oauth1SignatureModal" onclick="sign(document.request)"/>
+                <input type="reset" class="btn btn-primary" value="Reset"/>
+            </div>
+            <div id="oauth1SignatureModal" class="modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4>OAuth1 Signature</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <p>Normalized parameters</p><pre id="normalizedParameters">&nbsp;</pre>
+                            </div>
+                            <div class="mb-3">
+                                <p>Signature base string</p><pre id="signatureBaseString"> &nbsp;</pre>
+                            </div>
+                            <div>
+                                <p>Signature</p><pre id="signature">           &nbsp;</pre>
+                            </div>
+                            <div class="mb-3">
+                                <p>Authorization header</p><pre id="authorizationHeader"> &nbsp;</pre>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                          </div>                    
+                    </div>
+                </div>
+            </div>
         </form>
     </body>
 </html>
