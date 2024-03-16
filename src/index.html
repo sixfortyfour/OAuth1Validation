@@ -77,8 +77,8 @@
                                                              <input type="button" value="random" onclick="freshNonce()"/></td></tr>
             <tr><th align="right">signature method: </th><td><input name="oauth_signature_method" type="text" size="12" value="HMAC-SHA1"/></td></tr>
           </table>
-          <input type="button" value="Sign" onclick="sign(document.request)"/>
-          <input type="reset" value="Reset"/>
+          <input type="button" class="btn btn-primary" value="Sign" onclick="sign(document.request)"/>
+          <input type="reset" class="btn btn-primary" value="Reset"/>
           <br/>
           <table border="2">
             <tr valign="baseline"><th align="right">normalized parameters:</th><td><pre id="normalizedParameters">&nbsp;</pre></td></tr>
